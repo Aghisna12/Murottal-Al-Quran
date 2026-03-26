@@ -4,7 +4,7 @@
 
 Website sederhana untuk mendengarkan murottal Al-Qur'an secara online dengan tampilan ringan, responsif, dan mudah digunakan.
 
-🔗 **Live Preview**: [https://teman-hijrahmu.web.app/murottal](https://teman-hijrahmu.web.app/murottal)
+🔗 **Live Preview:** [https://teman-hijrahmu.web.app/murottal](https://teman-hijrahmu.web.app/murottal)
 
 ---
 
