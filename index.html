@@ -1,0 +1,1606 @@
+<!--
+  made with ♡ by Gufron for Ria
+  created : 28 mei 2025
+  reference : https://codepen.io/younesciro/pen/qBRejva
+-->
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Murottal</title>
+    <link rel="icon" href="images/logo.png" sizes="16x16" type="image/png">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+      integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style type="text/css">
+      :root {
+        --primary-color: #87CEEB;
+        --text-color: #333;
+      }
+
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: inherit;
+      }
+
+      body {
+        background-color: #f5f5f5;
+      }
+
+      html {
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      .player {
+        position: relative;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+
+      .player .icon-pause {
+        display: none;
+      }
+
+      .player.playing .icon-pause {
+        display: inline-block;
+      }
+
+      .player.playing .icon-play {
+        display: none;
+      }
+
+      .dashboard {
+        padding: 16px 16px 14px;
+        background-color: #fff;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        max-width: 480px;
+        border-bottom: 1px solid #ebebeb;
+      }
+
+      /* HEADER */
+      header {
+        text-align: center;
+        margin-bottom: 5px;
+      }
+
+      header h4 {
+        color: var(--primary-color);
+        font-size: 12px;
+      }
+
+      header h2 {
+        color: var(--text-color);
+        font-size: 20px;
+      }
+
+      /* CD */
+      .cd {
+        display: flex;
+        margin: auto;
+        width: 160px;
+      }
+
+      .cd-thumb {
+        width: 100%;
+        padding-top: 85%;
+        background-size: cover;
+        margin: auto;
+      }
+
+      /* CONTROL */
+      .control {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: 18px 0 8px 0;
+      }
+
+      .control .btn {
+        color: #666;
+        padding: 18px;
+        font-size: 18px;
+      }
+
+      .control .btn.active {
+        color: var(--primary-color);
+      }
+
+      .control .btn-toggle-play {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        font-size: 24px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--primary-color);
+      }
+
+      .progress {
+        width: 100%;
+        -webkit-appearance: none;
+        height: 6px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: 0.2s;
+        transition: opacity 0.2s;
+      }
+
+      .progress::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        border-radius: 12px;
+        width: 14px;
+        height: 12px;
+        background-color: var(--primary-color);
+        cursor: pointer;
+      }
+
+      .duration {
+        display: flex;
+      }
+
+      .duration .current-duration {
+        font-size: 14px;
+      }
+
+      .duration .total-duration {
+        font-size: 14px;
+        margin-left: auto; 
+        margin-right: 0;
+      }
+
+      /* PLAYLIST */
+      .playlist {
+        margin-top: 408px;
+        padding: 12px;
+      }
+
+      .song {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        background-color: #fff;
+        padding: 8px 16px;
+        border-radius: 5px;
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .song.active {
+        background-color: var(--primary-color);
+      }
+
+      .song:active {
+        opacity: 0.8;
+      }
+
+      .song.active .option,
+      .song.active .author,
+      .song.active .title {
+        color: #fff;
+      }
+
+      .song .thumb {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background-color: #ccc;
+        text-align: center;
+        color: #fff;
+        font-weight: bold;
+        margin: 0 8px;
+        padding-top: 10px;
+      }
+
+      .song .body {
+        flex: 1;
+        padding: 0 16px;
+      }
+
+      .song .title {
+        font-size: 18px;
+        color: var(--text-color);
+      }
+
+      .song .author {
+        font-size: 12px;
+        color: #999;
+      }
+
+      .song .option {
+        padding: 16px 8px;
+        color: #999;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="player">
+      <!-- Dashboard -->
+      <div class="dashboard">
+        <!-- Header -->
+        <header>
+          <h2>Bismillah</h2>
+          <h4>Alhamdulillah</h4>
+        </header>
+
+        <!-- CD -->
+        <div class="cd">
+          <div class="cd-thumb" style="background-image: url('https://cdn-icons-png.flaticon.com/512/9960/9960186.png');"></div>
+        </div>
+
+        <!-- Control -->
+        <div class="control">
+          <div class="btn btn-repeat">
+            <i class="fas fa-sync"></i>
+          </div>
+          <div class="btn btn-prev">
+            <i class="fas fa-step-backward"></i>
+          </div>
+          <div class="btn btn-toggle-play">
+            <i class="fas fa-pause icon-pause"></i>
+            <i class="fas fa-play icon-play"></i>
+          </div>
+          <div class="btn btn-next">
+            <i class="fas fa-step-forward"></i>
+          </div>
+          <div class="btn btn-random">
+            <i class="fas fa-random"></i>
+          </div>
+        </div>
+
+        <input id="progress" class="progress" type="range" step="1" value="0" min="0" max="100" />
+        <div class="duration">
+          <span class="current-duration">0:00</span>
+          <span class="total-duration">0:00</span>
+        </div>
+        <audio id="audio" preload="metadata" src=""></audio>
+        <div style="margin: 6px;">
+          <label for="recitation">Reciters : </label>
+          <select id="recitation" style="padding-bottom: 1px">
+            <option value="quran/abdullaah_3awwaad_al-juhaynee/$">Abdullah Awad al-Juhani</option>
+            <option value="quran/abdullaah_basfar/$">Abdullah Basfar</option>
+            <option value="quran/abdurrahmaan_as-sudays/$">Abdur-Rahman as-Sudais</option>
+            <option value="qdc/abdurrahmaan_as_sudais/murattal/#">Abdur-Rahman as-Sudais [Murattal]</option>
+            <option value="quran/huthayfi/$">Ali Abdur-Rahman al-Huthaify</option>
+            <option value="quran/abdul_muhsin_alqasim/$">AbdulMuhsin al-Qasim</option>
+            <option value="quran/thubaity/$">AbdulBari ath-Thubaity</option>
+            <option value="quran/ahmed_ibn_3ali_al-3ajamy/$">Ahmed ibn Ali al-Ajmy</option>
+            <option value="quran/abdulazeez_al-ahmad/$">AbdulAzeez al-Ahmad</option>
+            <option value="qdc/abdul_baset/murattal/#">AbdulBaset AbdulSamad</option>
+            <option value="quran/abdul_basit_murattal/$">AbdulBaset AbdulSamad [Murattal]</option>
+            <option value="quran/abdulwadood_haneef/$">AbdulWadud Haneef</option>
+            <option value="quran/aziz_alili/$">Aziz Alili</option>
+            <option value="quran/abdulbaset_mujawwad/$">AbdulBaset AbdulSamad [Mujawwad]</option>
+            <option value="quran/alhusaynee_al3azazee_with_children/$">Al-Hussayni Al-&#x27;Azazy (with Children)</option>
+            <option value="quran/abdulrazaq_bin_abtan_al_dulaimi/$">Abdur-Razaq bin Abtan al-Dulaimi [Mujawwad]</option>
+            <option value="quran/khayat/$">Abdullah Khayat</option>
+            <option value="quran/adel_kalbani/$">Adel Kalbani</option>
+            <option value="quran/abdulkareem_al_hazmi/$">AbdulKareem Al Hazmi</option>
+            <option value="quran/abdulmun3im_abdulmubdi2/$">Abdul-Mun&#x27;im Abdul-Mubdi&#x27;</option>
+            <option value="quran/abdurrashid_sufi/$">Abdur-Rashid Sufi</option>
+            <option value="quran/ahmad_alhuthayfi/$">Ahmad al-Huthaify</option>
+            <option value="qdc/abu_bakr_shatri/murattal/#">Abu Bakr al-Shatri</option>
+            <option value="quran/abu_bakr_ash-shatri_tarawee7/$">Abu Bakr al-Shatri [Taraweeh]</option>
+            <option value="quran/abdullah_matroud/$">Abdullah Matroud</option>
+            <option value="quran/abdul_wadood_haneef_rare/$">AbdulWadood Haneef</option>
+            <option value="quran/ahmad_nauina/$">Ahmad Nauina</option>
+            <option value="quran/akram_al_alaqmi/$">Akram Al-Alaqmi</option>
+            <option value="quran/ali_hajjaj_alsouasi/$">Ali Hajjaj Alsouasi</option>
+            <option value="quran/asim_abdulaleem/$">Asim Abdul Aleem</option>
+            <option value="quran/abdallah_abdal/$">Abdallah Abdal</option>
+            <option value="quran/ali_jaber/$">Abdullah Ali Jabir</option>
+            <option value="quran/bandar_baleela/complete/$">Bandar Baleela</option>
+            <option value="quran/dr.shawqy_7amed/murattal/$">Dr. Shawqy Hamed [Murattal]</option>
+            <option value="quran/fares/$">Fares Abbad</option>
+            <option value="quran/fatih_seferagic/$">Fatih Seferagic</option>
+            <option value="quran/rifai/$">Hani ar-Rifai</option>
+            <option value="quran/hamad_sinan/$">Hamad Sinan</option>
+            <option value="quran/hatem_farid/collection/$">Hatem Farid</option>
+            <option value="quran/jibreen/$">Ibrahim Al-Jibrin</option>
+            <option value="quran/imad_zuhair_hafez/$">Imad Zuhair Hafez</option>
+            <option value="quran/ibrahim_al_akhdar/$">Ibrahim Al Akhdar</option>
+            <option value="quran/idrees_akbar/$">Idrees Abkar</option>
+            <option value="quran/khaalid_al-qahtaanee/$">Khalid al-Qahtani</option>
+            <option value="quran/khalid_alghamdi/$">Khalid Al Ghamdi</option>
+            <option value="qdc/khalifah_taniji/murattal/#">Khalifah Al Tunaiji</option>
+            <option value="quran/khalifah_taniji/$">Khalifah Taniji</option>
+            <option value="quran/mishaari_raashid_al_3afaasee/$" selected="true">Mishari Rashid al-`Afasy</option>
+            <option value="qdc/siddiq_minshawi/murattal/#">Mohamed Siddiq al-Minshawi</option>
+            <option value="quran/muhammad_siddeeq_al-minshaawee/$">Muhammad Siddiq al-Minshawi</option>
+            <option value="quran/muhammad_jibreel/complete/$">Muhammad Jibreel</option>
+            <option value="quran/mehysni/$">Muhammad al-Mehysni</option>
+            <option value="quran/minshawi_mujawwad/$">Muhammad Siddiq al-Minshawi [Mujawwad]</option>
+            <option value="quran/muhammad_alhaidan/$">Muhammad al-Luhaidan</option>
+            <option value="quran/muhammad_abdulkareem/$">Muhammad Abdul-Kareem</option>
+            <option value="quran/mustafa_al3azzawi/$">Mustafa al-`Azawi</option>
+            <option value="quran/mu7ammad_7assan/$">Muhammad Hassan</option>
+            <option value="quran/mostafa_ismaeel/$">Mostafa Ismaeel</option>
+            <option value="quran/muhammad_patel/$">Muhammad Sulaiman Patel</option>
+            <option value="quran/mohammad_altablawi/$">Mohammad Al-Tablawi</option>
+            <option value="quran/mohammad_ismaeel_almuqaddim/$">Mohammad Ismaeel Al-Muqaddim</option>
+            <option value="quran/muhammad_ayyoob_hq/$">Muhammad Ayyoob [Taraweeh]</option>
+            <option value="quran/masjid_quba_1434/$">Masjid Quba Taraweeh 1434</option>
+            <option value="quran/muhammad_khaleel/$">Muhammad Khaleel</option>
+            <option value="qdc/khalil_al_husary/murattal/#">Mahmoud Khalil Al-Husary</option>
+            <option value="quran/mahmood_khaleel_al-husaree_iza3a/$">Mahmoud Khaleel Al-Husary</option>
+            <option value="quran/mahmood_ali_albana/$">Mahmood Ali Al-Bana</option>
+            <option value="quran/maher_almu3aiqly/year1440/$">Maher al-Muaiqly</option>
+            <option value="quran/nabil_rifa3i/$">Nabil ar-Rifai</option>
+            <option value="quran/nasser_bin_ali_alqatami/$">Nasser Al Qatami</option>
+            <option value="quran/sa3ood_al-shuraym/$">Sa`ud ash-Shuraym</option>
+            <option value="qdc/saud_ash-shuraym/murattal/$">Sa`ud ash-Shuraym</option>
+            <option value="quran/sa3d_al-ghaamidi/complete/$">Saad al-Ghamdi</option>
+            <option value="quran/sahl_yaaseen/$">Sahl Yasin</option>
+            <option value="quran/salaah_bukhaatir/$">Salah Bukhatir</option>
+            <option value="quran/sodais_and_shuraim/$">Sudais and Shuraym</option>
+            <option value="quran/saleh_al_taleb/$">Saleh al Taleb</option>
+            <option value="quran/salahbudair/$">Salah al-Budair</option>
+            <option value="quran/sadaqat_ali/$">Sadaqat `Ali</option>
+            <option value="quran/salah_alhashim/$">Salah Al-Hashim</option>
+            <option value="quran/tawfeeq_bin_saeed-as-sawaaigh/$">Tawfeeq ibn Sa`id as-Sawa&#x27;igh</option>
+            <option value="quran/wadee_hammadi_al-yamani/$">Wadee Hammadi Al Yamani</option>
+            <option value="quran/yasser_ad-dussary/$">Yasser ad-Dussary</option>
+          </select>
+        </div>
+        <small>© 2025 Web Murottal • 🚀 <a href="https://github.com/Aghisna12" target="_blank" style="text-decoration: none;">Muhammad Gufron</a></small>
+      </div>
+
+      <!-- Playlist -->
+      <div class="playlist"></div>
+    </div>
+    <script>
+      const $ = document.querySelector.bind(document);
+      const $$ = document.querySelectorAll.bind(document);
+
+      const PLAYER_STORAGE_KEY = "VTC_PLAYER";
+
+      const player = $(".player");
+      const cd = $(".cd");
+
+      const heading = $("header h2");
+      const subHeading = $("header h4");
+      const audio = $("#audio");
+      const playlist = $(".playlist");
+
+      const playBtn = $(".btn-toggle-play");
+      const progress = $("#progress");
+      const currentDur = $(".current-duration");
+      const totalDur = $(".total-duration");
+
+      const prevBtn = $(".btn-prev");
+      const nextBtn = $(".btn-next");
+
+      const randomBtn = $(".btn-random");
+      const repeatBtn = $(".btn-repeat");
+
+      const recitation = $('#recitation');
+
+      function convertTime(seconds) {
+        seconds = Number(seconds);
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = Math.floor(seconds % 60);
+        return (h ? h + ":" : "") + (m < 10 && h ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+      }
+
+      const app = {
+        urlReciter: 'quran/mishaari_raashid_al_3afaasee/$',
+        currentIndex: 0,
+        isPlaying: false,
+        isRandom: false,
+        isRepeat: false,
+        config: JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || {},
+        songs: [
+        {
+            "id": 1,
+            "arabic": " الفاتحة",
+            "transliteration": "Al-Fatihah",
+            "translation": "Pembuka",
+            "num_ayah": 7,
+            "page": 1,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 2,
+            "arabic": " البقرة",
+            "transliteration": "Al-Baqarah",
+            "translation": "Sapi",
+            "num_ayah": 286,
+            "page": 2,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 3,
+            "arabic": " اٰل عمرٰن",
+            "transliteration": "Ali ‘Imran",
+            "translation": "Keluarga Imran",
+            "num_ayah": 200,
+            "page": 50,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 4,
+            "arabic": "النّساۤء",
+            "transliteration": "An-Nisa'",
+            "translation": "Perempuan",
+            "num_ayah": 176,
+            "page": 77,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 5,
+            "arabic": " الماۤئدة",
+            "transliteration": "Al-Ma'idah",
+            "translation": "Hidangan",
+            "num_ayah": 120,
+            "page": 106,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 6,
+            "arabic": " الانعام",
+            "transliteration": "Al-An‘am",
+            "translation": "Binatang Ternak",
+            "num_ayah": 165,
+            "page": 128,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 7,
+            "arabic": " الاعراف",
+            "transliteration": "Al-A‘raf",
+            "translation": "Tempat Tertinggi",
+            "num_ayah": 206,
+            "page": 151,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 8,
+            "arabic": " الانفال",
+            "transliteration": "Al-Anfal",
+            "translation": "Rampasan Perang",
+            "num_ayah": 75,
+            "page": 177,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 9,
+            "arabic": "التّوبة",
+            "transliteration": "At-Taubah",
+            "translation": "Pengampunan",
+            "num_ayah": 129,
+            "page": 187,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 10,
+            "arabic": " يونس",
+            "transliteration": "Yunus",
+            "translation": "Yunus",
+            "num_ayah": 109,
+            "page": 208,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 11,
+            "arabic": " هود",
+            "transliteration": "Hud",
+            "translation": "Hud",
+            "num_ayah": 123,
+            "page": 221,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 12,
+            "arabic": " يوسف",
+            "transliteration": "Yusuf",
+            "translation": "Yusuf",
+            "num_ayah": 111,
+            "page": 235,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 13,
+            "arabic": " الرّعد",
+            "transliteration": "Ar-Ra‘d",
+            "translation": "Guruh",
+            "num_ayah": 43,
+            "page": 249,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 14,
+            "arabic": " ابرٰهيم",
+            "transliteration": "Ibrahim",
+            "translation": "Ibrahim",
+            "num_ayah": 52,
+            "page": 255,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 15,
+            "arabic": " الحجر",
+            "transliteration": "Al-Hijr",
+            "translation": "Hijr",
+            "num_ayah": 99,
+            "page": 262,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 16,
+            "arabic": "النّحل",
+            "transliteration": "An-Nahl",
+            "translation": "Lebah",
+            "num_ayah": 128,
+            "page": 267,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 17,
+            "arabic": " الاسراۤء",
+            "transliteration": "Al-Isra'",
+            "translation": "Memperjalankan di Malam Hari",
+            "num_ayah": 111,
+            "page": 282,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 18,
+            "arabic": " الكهف",
+            "transliteration": "Al-Kahf",
+            "translation": "Gua",
+            "num_ayah": 110,
+            "page": 293,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 19,
+            "arabic": " مريم",
+            "transliteration": "Maryam",
+            "translation": "Maryam",
+            "num_ayah": 98,
+            "page": 305,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 20,
+            "arabic": " طٰهٰ",
+            "transliteration": "Taha",
+            "translation": "Taha",
+            "num_ayah": 135,
+            "page": 312,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 21,
+            "arabic": " الانبياۤء",
+            "transliteration": "Al-Anbiya'",
+            "translation": "Para Nabi",
+            "num_ayah": 112,
+            "page": 322,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 22,
+            "arabic": "الحجّ",
+            "transliteration": "Al-Hajj",
+            "translation": "Haji",
+            "num_ayah": 78,
+            "page": 332,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 23,
+            "arabic": " المؤمنون",
+            "transliteration": "Al-Mu'minun",
+            "translation": "Orang-Orang Mukmin",
+            "num_ayah": 118,
+            "page": 342,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 24,
+            "arabic": " النّور",
+            "transliteration": "An-Nur",
+            "translation": "Cahaya",
+            "num_ayah": 64,
+            "page": 350,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 25,
+            "arabic": " الفرقان",
+            "transliteration": "Al-Furqan",
+            "translation": "Pembeda",
+            "num_ayah": 77,
+            "page": 359,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 26,
+            "arabic": "الشّعراۤء",
+            "transliteration": "Asy-Syu‘ara'",
+            "translation": "Para Penyair",
+            "num_ayah": 227,
+            "page": 367,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 27,
+            "arabic": "النّمل",
+            "transliteration": "An-Naml",
+            "translation": "Semut",
+            "num_ayah": 93,
+            "page": 377,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 28,
+            "arabic": " القصص",
+            "transliteration": "Al-Qasas",
+            "translation": "Kisah-Kisah",
+            "num_ayah": 88,
+            "page": 385,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 29,
+            "arabic": " العنكبوت",
+            "transliteration": "Al-‘Ankabut",
+            "translation": "Laba-Laba",
+            "num_ayah": 69,
+            "page": 396,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 30,
+            "arabic": " الرّوم",
+            "transliteration": "Ar-Rum",
+            "translation": "Romawi",
+            "num_ayah": 60,
+            "page": 404,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 31,
+            "arabic": " لقمٰن",
+            "transliteration": "Luqman",
+            "translation": "Luqman",
+            "num_ayah": 34,
+            "page": 411,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 32,
+            "arabic": " السّجدة",
+            "transliteration": "As-Sajdah",
+            "translation": "Sajdah",
+            "num_ayah": 30,
+            "page": 415,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 33,
+            "arabic": " الاحزاب",
+            "transliteration": "Al-Ahzab",
+            "translation": "Golongan Yang Bersekutu",
+            "num_ayah": 73,
+            "page": 418,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 34,
+            "arabic": " سبأ",
+            "transliteration": "Saba'",
+            "translation": "Saba'",
+            "num_ayah": 54,
+            "page": 428,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 35,
+            "arabic": " فاطر",
+            "transliteration": "Fatir",
+            "translation": "Pencipta",
+            "num_ayah": 45,
+            "page": 434,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 36,
+            "arabic": " يٰسۤ",
+            "transliteration": "Yasin",
+            "translation": "Yasin",
+            "num_ayah": 83,
+            "page": 440,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 37,
+            "arabic": " الصّٰۤفّٰت",
+            "transliteration": "As-Saffat",
+            "translation": "Barisan-Barisan",
+            "num_ayah": 182,
+            "page": 446,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 38,
+            "arabic": "صۤ",
+            "transliteration": "Sad",
+            "translation": "Ṣād ",
+            "num_ayah": 88,
+            "page": 453,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 39,
+            "arabic": "الزّمر",
+            "transliteration": "Az-Zumar",
+            "translation": "Rombongan",
+            "num_ayah": 75,
+            "page": 458,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 40,
+            "arabic": " غافر",
+            "transliteration": "Gafir",
+            "translation": "Maha Pengampun",
+            "num_ayah": 85,
+            "page": 467,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 41,
+            "arabic": " فصّلت",
+            "transliteration": "Fussilat",
+            "translation": "Dijelaskan",
+            "num_ayah": 54,
+            "page": 477,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 42,
+            "arabic": "الشّورٰى",
+            "transliteration": "Asy-Syura",
+            "translation": "Musyawarah",
+            "num_ayah": 53,
+            "page": 483,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 43,
+            "arabic": "الزّخرف",
+            "transliteration": "Az-Zukhruf",
+            "translation": "Perhiasan dari Emas",
+            "num_ayah": 89,
+            "page": 489,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 44,
+            "arabic": "الدّخان",
+            "transliteration": "Ad-Dukhan",
+            "translation": "Kabut Asap",
+            "num_ayah": 59,
+            "page": 496,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 45,
+            "arabic": " الجاثية",
+            "transliteration": "Al-Jasiyah",
+            "translation": "Berlutut",
+            "num_ayah": 37,
+            "page": 499,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 46,
+            "arabic": " الاحقاف",
+            "transliteration": "Al-Ahqaf",
+            "translation": "Ahqaf",
+            "num_ayah": 35,
+            "page": 502,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 47,
+            "arabic": " محمّد",
+            "transliteration": "Muhammad",
+            "translation": "Nabi Muhammad",
+            "num_ayah": 38,
+            "page": 507,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 48,
+            "arabic": " الفتح",
+            "transliteration": "Al-Fath",
+            "translation": "Kemenangan",
+            "num_ayah": 29,
+            "page": 511,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 49,
+            "arabic": " الحجرٰت",
+            "transliteration": "Al-Hujurat",
+            "translation": "Kamar-Kamar",
+            "num_ayah": 18,
+            "page": 515,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 50,
+            "arabic": "قۤ",
+            "transliteration": "Qaf",
+            "translation": "Qaf",
+            "num_ayah": 45,
+            "page": 518,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 51,
+            "arabic": " الذّٰريٰت",
+            "transliteration": "Az-Zariyat",
+            "translation": "Yang Menerbangkan",
+            "num_ayah": 60,
+            "page": 520,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 52,
+            "arabic": "الطّور",
+            "transliteration": "At-Tur",
+            "translation": "Gunung",
+            "num_ayah": 49,
+            "page": 523,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 53,
+            "arabic": "النّجم",
+            "transliteration": "An-Najm",
+            "translation": "Bintang",
+            "num_ayah": 62,
+            "page": 526,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 54,
+            "arabic": " القمر",
+            "transliteration": "Al-Qamar",
+            "translation": "Bulan",
+            "num_ayah": 55,
+            "page": 528,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 55,
+            "arabic": "الرّحمٰن",
+            "transliteration": "Ar-Rahman",
+            "translation": "Yang Maha Pengasih",
+            "num_ayah": 78,
+            "page": 531,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 56,
+            "arabic": " الواقعة",
+            "transliteration": "Al-Waqi‘ah",
+            "translation": "Hari Kiamat Yang Pasti Terjadi",
+            "num_ayah": 96,
+            "page": 534,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 57,
+            "arabic": " الحديد",
+            "transliteration": "Al-Hadid",
+            "translation": "Besi",
+            "num_ayah": 29,
+            "page": 537,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 58,
+            "arabic": " المجادلة",
+            "transliteration": "Al-Mujadalah",
+            "translation": "Gugatan",
+            "num_ayah": 22,
+            "page": 542,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 59,
+            "arabic": " الحشر",
+            "transliteration": "Al-Hasyr",
+            "translation": "Pengusiran",
+            "num_ayah": 24,
+            "page": 545,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 60,
+            "arabic": " الممتحنة",
+            "transliteration": "Al-Mumtahanah",
+            "translation": "Wanita Yang Diuji",
+            "num_ayah": 13,
+            "page": 549,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 61,
+            "arabic": " الصّفّ",
+            "transliteration": "As-Saff",
+            "translation": "Barisan",
+            "num_ayah": 14,
+            "page": 551,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 62,
+            "arabic": " الجمعة",
+            "transliteration": "Al-Jumu‘ah",
+            "translation": "Jumat",
+            "num_ayah": 11,
+            "page": 553,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 63,
+            "arabic": " المنٰفقون",
+            "transliteration": "Al-Munafiqun",
+            "translation": "Orang-Orang Munafik",
+            "num_ayah": 11,
+            "page": 554,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 64,
+            "arabic": "التّغابن",
+            "transliteration": "At-Tagabun",
+            "translation": "Pengungkapan Kesalahan",
+            "num_ayah": 18,
+            "page": 556,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 65,
+            "arabic": "الطّلاق",
+            "transliteration": "At-Talaq",
+            "translation": "Talak",
+            "num_ayah": 12,
+            "page": 558,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 66,
+            "arabic": "التّحريم",
+            "transliteration": "At-tahrim",
+            "translation": "Pengharaman",
+            "num_ayah": 12,
+            "page": 560,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 67,
+            "arabic": "المُلك",
+            "transliteration": "Al-Mulk",
+            "translation": "Kerajaan",
+            "num_ayah": 30,
+            "page": 562,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 68,
+            "arabic": " القلم",
+            "transliteration": "Al-Qalam",
+            "translation": "Pena",
+            "num_ayah": 52,
+            "page": 564,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 69,
+            "arabic": " الحاۤقّة",
+            "transliteration": "Al-Haqqah",
+            "translation": "Hari Kiamat Yang Pasti Terjadi",
+            "num_ayah": 52,
+            "page": 566,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 70,
+            "arabic": " المعارج",
+            "transliteration": "Al-Ma‘arij",
+            "translation": "Tempat-Tempat Naik",
+            "num_ayah": 44,
+            "page": 568,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 71,
+            "arabic": " نوح",
+            "transliteration": "Nuh",
+            "translation": "Nuh",
+            "num_ayah": 28,
+            "page": 570,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 72,
+            "arabic": "الجنّ",
+            "transliteration": "Al-Jinn",
+            "translation": "Jin",
+            "num_ayah": 28,
+            "page": 572,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 73,
+            "arabic": " المزّمّل",
+            "transliteration": "Al-Muzzammil",
+            "translation": "Orang Berkelumun",
+            "num_ayah": 20,
+            "page": 574,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 74,
+            "arabic": " المدّثّر",
+            "transliteration": "Al-Muddassir",
+            "translation": "Orang Berselimut",
+            "num_ayah": 56,
+            "page": 575,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 75,
+            "arabic": " القيٰمة",
+            "transliteration": "Al-Qiyamah",
+            "translation": "Hari Kiamat",
+            "num_ayah": 40,
+            "page": 577,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 76,
+            "arabic": " الانسان",
+            "transliteration": "Al-Insan",
+            "translation": "Manusia",
+            "num_ayah": 31,
+            "page": 578,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 77,
+            "arabic": " المرسلٰت",
+            "transliteration": "Al-Mursalat",
+            "translation": "Malaikat Yang Diutus",
+            "num_ayah": 50,
+            "page": 580,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 78,
+            "arabic": "النّبأ",
+            "transliteration": "An-Naba'",
+            "translation": "Berita",
+            "num_ayah": 40,
+            "page": 582,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 79,
+            "arabic": " النّٰزعٰت",
+            "transliteration": "An-Nazi‘at",
+            "translation": "Yang Mencabut Dengan Keras",
+            "num_ayah": 46,
+            "page": 583,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 80,
+            "arabic": " عبس",
+            "transliteration": "‘Abasa",
+            "translation": "Berwajah Masam",
+            "num_ayah": 42,
+            "page": 585,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 81,
+            "arabic": "التّكوير",
+            "transliteration": "At-Takwir",
+            "translation": "Penggulungan",
+            "num_ayah": 29,
+            "page": 586,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 82,
+            "arabic": " الانفطار",
+            "transliteration": "Al-Infitar",
+            "translation": "Terbelah",
+            "num_ayah": 19,
+            "page": 587,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 83,
+            "arabic": " المطفّفين",
+            "transliteration": "Al-Mutaffifin",
+            "translation": "Orang-Orang Yang Curang",
+            "num_ayah": 36,
+            "page": 587,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 84,
+            "arabic": " الانشقاق",
+            "transliteration": "Al-Insyiqaq",
+            "translation": "Terbelah",
+            "num_ayah": 25,
+            "page": 589,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 85,
+            "arabic": " البروج",
+            "transliteration": "Al-Buruj",
+            "translation": "Gugusan Bintang",
+            "num_ayah": 22,
+            "page": 590,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 86,
+            "arabic": "الطّارق",
+            "transliteration": "At-Tariq",
+            "translation": "Yang Datang Pada Malam Hari",
+            "num_ayah": 17,
+            "page": 591,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 87,
+            "arabic": " الاعلى",
+            "transliteration": "Al-A‘la",
+            "translation": "Yang Maha Tinggi",
+            "num_ayah": 19,
+            "page": 591,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 88,
+            "arabic": " الغاشية",
+            "transliteration": "Al-Gasyiyah",
+            "translation": "Hari Kiamat Yang Menghilangkan Kesadaran",
+            "num_ayah": 26,
+            "page": 592,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 89,
+            "arabic": " الفجر",
+            "transliteration": "Al-Fajr",
+            "translation": "Fajar",
+            "num_ayah": 30,
+            "page": 593,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 90,
+            "arabic": " البلد",
+            "transliteration": "Al-Balad",
+            "translation": "Negeri",
+            "num_ayah": 20,
+            "page": 594,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 91,
+            "arabic": "الشّمس",
+            "transliteration": "Asy-Syams",
+            "translation": "Matahari",
+            "num_ayah": 15,
+            "page": 595,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 92,
+            "arabic": " الّيل",
+            "transliteration": "Al-Lail",
+            "translation": "Malam",
+            "num_ayah": 21,
+            "page": 595,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 93,
+            "arabic": "الضّحى",
+            "transliteration": "Ad-Duha",
+            "translation": "Duha",
+            "num_ayah": 11,
+            "page": 596,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 94,
+            "arabic": "الشّرح",
+            "transliteration": "Asy-Syarh",
+            "translation": "Pelapangan",
+            "num_ayah": 8,
+            "page": 596,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 95,
+            "arabic": "التّين",
+            "transliteration": "At-Tin",
+            "translation": "Buah Tin",
+            "num_ayah": 8,
+            "page": 597,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 96,
+            "arabic": " العلق",
+            "transliteration": "Al-‘Alaq",
+            "translation": "Segumpal Darah",
+            "num_ayah": 19,
+            "page": 597,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 97,
+            "arabic": " القدر",
+            "transliteration": "Al-Qadr",
+            "translation": "Al-Qadar",
+            "num_ayah": 5,
+            "page": 598,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 98,
+            "arabic": " البيّنة",
+            "transliteration": "Al-Bayyinah",
+            "translation": "Bukti Nyata",
+            "num_ayah": 8,
+            "page": 598,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 99,
+            "arabic": "الزّلزلة",
+            "transliteration": "Az-Zalzalah",
+            "translation": "Guncangan",
+            "num_ayah": 8,
+            "page": 599,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 100,
+            "arabic": " العٰديٰت",
+            "transliteration": "Al-‘Adiyat",
+            "translation": "Kuda Perang Yang Berlari Kencang",
+            "num_ayah": 11,
+            "page": 599,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 101,
+            "arabic": " القارعة",
+            "transliteration": "Al-Qari‘ah",
+            "translation": "Al-Qāri‘ah",
+            "num_ayah": 11,
+            "page": 600,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 102,
+            "arabic": "التّكاثر",
+            "transliteration": "At-Takasur",
+            "translation": "Berbangga-Bangga Dalam Memperbanyak Dunia",
+            "num_ayah": 8,
+            "page": 600,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 103,
+            "arabic": " العصر",
+            "transliteration": "Al-‘Asr",
+            "translation": "Masa",
+            "num_ayah": 3,
+            "page": 601,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 104,
+            "arabic": " الهمزة",
+            "transliteration": "Al-Humazah",
+            "translation": "Pengumpat",
+            "num_ayah": 9,
+            "page": 601,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 105,
+            "arabic": " الفيل",
+            "transliteration": "Al-Fil",
+            "translation": "Gajah",
+            "num_ayah": 5,
+            "page": 601,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 106,
+            "arabic": " قريش",
+            "transliteration": "Quraisy",
+            "translation": "Orang Quraisy",
+            "num_ayah": 4,
+            "page": 602,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 107,
+            "arabic": " الماعون",
+            "transliteration": "Al-Ma‘un",
+            "translation": "Bantuan",
+            "num_ayah": 7,
+            "page": 602,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 108,
+            "arabic": " الكوثر",
+            "transliteration": "Al-Kausar",
+            "translation": "Nikmat Yang Banyak",
+            "num_ayah": 3,
+            "page": 602,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 109,
+            "arabic": " الكٰفرون",
+            "transliteration": "Al-Kafirun",
+            "translation": "Orang-Orang kafir",
+            "num_ayah": 6,
+            "page": 603,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 110,
+            "arabic": "النّصر",
+            "transliteration": "An-Nasr",
+            "translation": "Pertolongan",
+            "num_ayah": 3,
+            "page": 603,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 111,
+            "arabic": "اللّهب",
+            "transliteration": "Al-Lahab",
+            "translation": "Gejolak Api",
+            "num_ayah": 5,
+            "page": 603,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 112,
+            "arabic": " الاخلاص",
+            "transliteration": "Al-Ikhlas",
+            "translation": "Ikhlas",
+            "num_ayah": 4,
+            "page": 604,
+            "location": "Makkiyah"
+        },
+        {
+            "id": 113,
+            "arabic": " الفلق",
+            "transliteration": "Al-Falaq",
+            "translation": "Fajar",
+            "num_ayah": 5,
+            "page": 604,
+            "location": "Madaniyah"
+        },
+        {
+            "id": 114,
+            "arabic": "النّاس",
+            "transliteration": "An-Nas",
+            "translation": "Manusia",
+            "num_ayah": 6,
+            "page": 604,
+            "location": "Madaniyah"
+        }
+        ],
+
+        setConfig(key, value) {
+          this.config[key] = value;
+          localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(this.config));
+        },
+
+        render() {
+          playlist.innerHTML = this.songs
+            .map((song, index) => `
+              <div class="song ${index === this.currentIndex ? "active" : ""}" data-index="${index}">
+                <div class="thumb"><span>${song.id}</span></div>
+                <div class="body">
+                  <h3 class="title">${song.transliteration} <span class="author">(${song.translation})</span></h3>
+                  <p class="author">${song.location} • ${song.num_ayah} Ayat</p>
+                </div>
+                <div class="option"><p>${song.arabic}</p></div>
+              </div>
+            `)
+            .join("");
+        },
+
+        defineProperties() {
+          Object.defineProperty(this, "currentSong", {
+            get: () => this.songs[this.currentIndex],
+          });
+        },
+
+        handleEvents() {
+          const cdWidth = cd.offsetWidth;
+
+          document.addEventListener('scroll', function () {
+            const scrollTop = window.scrollY;
+            const newCdWidth = cdWidth - scrollTop;
+            cd.style.width = newCdWidth > 0 ? newCdWidth + 'px' : 0;
+            cd.style.opacity = (newCdWidth / cdWidth) > 0 ? newCdWidth / cdWidth : 0;
+          });
+
+          playBtn.onclick = () => (this.isPlaying ? audio.pause() : audio.play());
+
+          audio.onloadedmetadata = () => {
+            totalDur.textContent = convertTime(audio.duration);
+          };
+
+          audio.onplay = () => {
+            this.isPlaying = true;
+            player.classList.add("playing");
+          };
+
+          audio.onpause = () => {
+            this.isPlaying = false;
+            player.classList.remove("playing");
+          };
+
+          audio.ontimeupdate = () => {
+            if (audio.duration) {
+              const percent = Math.floor(audio.currentTime / audio.duration * 100);
+              progress.value = percent;
+              currentDur.textContent = convertTime(audio.currentTime);
+            }
+          };
+
+          progress.onchange = e => {
+            audio.currentTime = audio.duration * e.target.value / 100;
+          };
+
+          nextBtn.onclick = () => {
+            this.isRandom ? this.playRandomSong() : this.nextSong();
+            this.render();
+            this.scrollToActiveSong();
+            audio.play();
+          };
+
+          prevBtn.onclick = () => {
+            this.isRandom ? this.playRandomSong() : this.prevSong();
+            this.render();
+            audio.play();
+          };
+
+          randomBtn.onclick = () => {
+            this.isRandom = !this.isRandom;
+            this.setConfig("isRandom", this.isRandom);
+            randomBtn.classList.toggle("active", this.isRandom);
+          };
+
+          repeatBtn.onclick = () => {
+            this.isRepeat = !this.isRepeat;
+            this.setConfig("isRepeat", this.isRepeat);
+            repeatBtn.classList.toggle("active", this.isRepeat);
+          };
+
+          recitation.onchange = () => {
+            this.urlReciter = recitation.value;
+            this.loadCurrentSong();
+          };
+
+          audio.onended = () => {
+            this.isRepeat ? audio.play() : nextBtn.click();
+          };
+
+          playlist.onclick = e => {
+            const node = e.target.closest('.song');
+            if (!node) return;
+            this.currentIndex = Number(node.dataset.index);
+            currentDur.textContent = "0:00";
+            totalDur.textContent = "0:00";
+            this.loadCurrentSong();
+            this.render();
+            audio.play();
+          };
+        },
+
+        scrollToActiveSong() {
+          setTimeout(() => {
+            $(".song.active")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }, 400);
+        },
+
+        loadCurrentSong() {
+          heading.textContent = this.currentSong.transliteration;
+          subHeading.textContent = `${this.currentSong.location} • ${this.currentSong.num_ayah} Ayat`;
+
+          const s = String(this.currentSong.id).padStart(3, "0");
+
+          if (this.urlReciter.includes('$')) {
+            audio.src = `https://download.quranicaudio.com/${this.urlReciter.replace('$', s)}.mp3`;
+          } else if (this.urlReciter.includes('#')) {
+            audio.src = `https://download.quranicaudio.com/${this.urlReciter.replace('#', this.currentSong.id)}.mp3`;
+          } else {
+            audio.src = `https://download.quranicaudio.com/${this.urlReciter}${s}.mp3`;
+          }
+        },
+
+        loadConfig() {
+          this.isRandom = this.config.isRandom || false;
+          this.isRepeat = this.config.isRepeat || false;
+        },
+
+        nextSong() {
+          this.currentIndex = (this.currentIndex + 1) % this.songs.length;
+          this.loadCurrentSong();
+        },
+
+        prevSong() {
+          this.currentIndex = (this.currentIndex - 1 + this.songs.length) % this.songs.length;
+          this.loadCurrentSong();
+        },
+
+        playRandomSong() {
+          let newIndex;
+          do newIndex = Math.floor(Math.random() * this.songs.length);
+          while (newIndex === this.currentIndex);
+
+          this.currentIndex = newIndex;
+          this.loadCurrentSong();
+        },
+
+        start() {
+          this.loadConfig();
+          this.defineProperties();
+          this.handleEvents();
+          this.loadCurrentSong();
+          this.render();
+          randomBtn.classList.toggle("active", this.isRandom);
+          repeatBtn.classList.toggle("active", this.isRepeat);
+        },
+      };
+
+      app.start();
+    </script>
+  </body>
+</html>
